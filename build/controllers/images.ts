@@ -15,13 +15,13 @@ const uploadImage: RequestHandler = async (req, res) => {
 
     const { image } = req.files
 
-    if (image instanceof Array) new BadRequestError("Only one file allowed")
+    if (image instanceof Array) new BadRequestError("Please make sure to send only one image at a time")
 
     const fileType = await fileTypeFromBuffer(image.data)
 
-    if (!fileType || !/^image/.test(fileType.mime)) throw new BadRequestError("The file is not an image")
+    if (!fileType || !/^image/.test(fileType.mime)) throw new BadRequestError("Unsupported file type")
 
-    const filename = uuidv4() + "." + fileType
+    const filename = uuidv4() + "." + fileType.ext
 
     image.mv(__dirname + "/../upload/" + filename)
 

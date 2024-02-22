@@ -1,4 +1,4 @@
-import { Request, RequestHandler, Response } from "express"
+import { RequestHandler } from "express"
 import BadRequestError from "../errors/bad-request.js"
 import UnauthenticatedError from "../errors/unauthenticated.js"
 import User from "../models/User.js"
@@ -15,7 +15,7 @@ const register : RequestHandler = async (req, res) => {
 
 const login : RequestHandler = async (req, res) => {
     const { email, password } = req.body
-    if (!email || !password) throw new BadRequestError('Please provide an email and password')
+    if (!email || !password) throw new BadRequestError('Please provide email and password')
 
     const user = await User.findOne({ email })
 
