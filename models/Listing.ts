@@ -19,7 +19,7 @@ const ListingSchema = new mongoose.Schema({
             required: [true, 'Please provide a city'],
             trim: true,
         },
-        ZipCode: {
+        zipCode: {
             type: Number,
             required: [true, 'Please provide a ZipCode']
         }

@@ -14,6 +14,12 @@ const xssClean: RequestHandler = (req, res, next) => {
         })
         next()
     }
+
+    if(req.params) {
+        for (const [key, value] of Object.entries(req.params)) {
+            req.params[xss(key)] = xss(value);
+    }
+    }
 }
 
 
