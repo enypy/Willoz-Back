@@ -2,9 +2,10 @@ import { ErrorRequestHandler } from "express"
 import { StatusCodes } from "http-status-codes"
 import { MongooseError } from "mongoose"
 
-const errorHandlerMiddleware: ErrorRequestHandler = (err, req, res, next) => {
+const errorHandlerMiddleware: ErrorRequestHandler = (err, req, res, next) => { 
+  console.log(err)
   const customError = {
-    statusCode: err.StatusCode || StatusCodes.INTERNAL_SERVER_ERROR,
+    statusCode: err.statusCode || StatusCodes.INTERNAL_SERVER_ERROR,
     msg: err.message || 'Something went wrong try again later'
   }
 

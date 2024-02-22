@@ -1,8 +1,8 @@
-import BadRequestError from "errors/bad-request.js"
-import NotFoundError from "errors/not-found.js"
+import BadRequestError from "../errors/bad-request.js"
+import NotFoundError from "../errors/not-found.js"
 import { RequestHandler } from "express"
 import { StatusCodes } from "http-status-codes"
-import Listing from "models/Listing.js"
+import Listing from "../models/Listing.js"
 
 const getAllListings: RequestHandler = async (req, res) => {
     const allListings = await Listing.find()
@@ -25,23 +25,23 @@ const getListing: RequestHandler = async (req, res) => {
 }
 
 const createListing: RequestHandler = async (req, res) => {
-    req.body.createdBy = req.user.userId
-    const listing = await Listing.create({ ...req.body })
-    res
-        .status(StatusCodes.CREATED)
-        .json({ listing })
+        req.body.createdBy = req.user.userId
+        const listing = await Listing.create({ ...req.body })
+        res
+            .status(StatusCodes.CREATED)
+            .json({ listing })
 }
 
 const updateListing: RequestHandler = async (req, res) => {
     const {
-        body: { title, description, price, adress: { city, zipCode } },
         user: { userId },
         params: { id: listingId }
     } = req
+    const body = req.body
 
-    if (!title || !description || !price || !city || !zipCode) throw new BadRequestError('fields cannot be empty')
+    if (!body.title || !body.description || !body.price || !body.adress?.city || !body.adress?.zipCode) throw new BadRequestError('Title, description, price, city and zipCode fields are required')
 
-    const listing = await Listing.findOneAndUpdate({ createdBy: userId, _id: listingId }, req.body, { new: true, runValidators: true })
+    const listing = await Listing.findOneAndUpdate({ createdBy: userId, _id: listingId }, body, { new: true, runValidators: true })
 
     if (!listing) throw new NotFoundError(`Listing id ${listingId} not found`)
 

@@ -1,3 +1,4 @@
+import "express-async-errors"
 import express from "express"
 import connectDB from "./db/connect.js"
 import rateLimiter from "express-rate-limit"
@@ -10,6 +11,8 @@ import cors from "cors"
 import xssClean from "./middleware/xss-clean.js"
 import notFoundMiddleware from "./middleware/not-found.js"
 import errorHandlerMiddleware from "./middleware/error-handler.js"
+import fileUpload from "express-fileupload"
+import imagesRouter from "./routes/images.js"
 
 const app = express()
 app.disable('x-powered-by')
@@ -20,11 +23,18 @@ app.use(rateLimiter({
     max: 100,
 }))
 
+app.use(fileUpload({
+    limits: {
+        fileSize: 5000000, 
+    },
+    abortOnLimit: true,
+}))
 app.use(express.json())
 app.use(helmet())
 app.use(cors())
-// app.use(xssClean())
+app.use(xssClean)
 
+app.use('/images', imagesRouter)
 app.use('/api/v1/auth', authRouter)
 app.use('/api/v1/listings', authenticateUser, listingsRouter)
 
