@@ -25,7 +25,7 @@ app.use(rateLimiter({
 
 app.use(fileUpload({
     limits: {
-        fileSize: 5000000, 
+        fileSize: 5 * 1024 * 1024, 
     },
     abortOnLimit: true,
 }))
