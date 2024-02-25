@@ -34,9 +34,10 @@ app.use(helmet())
 app.use(cors())
 app.use(xssClean)
 
-app.use('/images', imagesRouter)
+
+app.use('/api/v1/images', imagesRouter)
 app.use('/api/v1/auth', authRouter)
-app.use('/api/v1/listings', authenticateUser, listingsRouter)
+app.use('/api/v1/listings', listingsRouter)
 
 app.use(notFoundMiddleware)
 app.use(errorHandlerMiddleware)

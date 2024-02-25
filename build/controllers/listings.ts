@@ -6,10 +6,14 @@ import Listing from "../models/Listing.js"
 
 const getAllListings: RequestHandler = async (req, res) => {
     const allListings = await Listing.find()
-    const userCreatedListings = await Listing.find({ createdBy: req.user.userId })
+    let userListings = null
+    if(req.user?.userId) {
+        userListings = await Listing.find({ createdBy: req.user.userId })
+    }
+
     res
         .status(StatusCodes.OK)
-        .json({ allListings, userCreatedListings })
+        .json({ allListings, userListings })
 }
 
 const getListing: RequestHandler = async (req, res) => {
