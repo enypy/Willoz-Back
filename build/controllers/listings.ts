@@ -4,45 +4,48 @@ import { RequestHandler } from "express"
 import { StatusCodes } from "http-status-codes"
 import Listing from "../models/Listing.js"
 import { ListingQuery, ListingQueryParams } from "build/types/ListingQueryParams.js"
+import validateQueryParam from "../utils/validateQueryParam.js"
 
 const getAllListings: RequestHandler = async (req, res) => {
     const { limit, offset, city, startDate, endDate, minPrice, maxPrice } = req.query as ListingQueryParams
-    const limitNumber = parseInt(limit as string) || 10
-    const offsetNumber = parseInt(offset as string) || 0
+    const limitNumber = validateQueryParam(limit) ? parseInt(limit as string) : 10
+    const offsetNumber = validateQueryParam(offset) ? parseInt(offset as string) : 0
     const query: ListingQuery = {}
 
-    if (city) {
+    if (validateQueryParam(city)) {
         query['adress.city'] = city
     }
 
     if (startDate || endDate) {
-        query.createdAt = {}
-        if (startDate) {
+        if (validateQueryParam(startDate)) {
+            query.createdAt = {}
             query.createdAt.$gte = new Date(startDate as string)
         }
-        if (endDate) {
+        if (validateQueryParam(endDate)) {
+            if (!query.createdAt) query.createdAt = {}
             query.createdAt.$lte = new Date(endDate as string)
         }
     }
 
     if (minPrice || maxPrice) {
-        query.price = {}
-        if (minPrice) {
+        if (validateQueryParam(minPrice)) {
+            query.price = {}
             query.price.$gte = parseFloat(minPrice as string)
         }
-        if (maxPrice) {
+        if (validateQueryParam(maxPrice)) {
+            if (!query.price) query.price = {}
             query.price.$lte = parseFloat(maxPrice as string)
         }
     }
 
-    const allListings = await Listing.find(query)
+    const listings = await Listing.find(query)
         .skip(offsetNumber)
         .limit(limitNumber)
 
 
     res
         .status(StatusCodes.OK)
-        .json({ allListings })
+        .json({ listings })
 }
 
 
