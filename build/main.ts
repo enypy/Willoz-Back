@@ -4,7 +4,7 @@ import connectDB from "./db/connect.js"
 import rateLimiter from "express-rate-limit"
 import listingsRouter from "./routes/listings.js"
 import authRouter from "./routes/auth.js"
-import authenticateUser from "./middleware/authentication.js"
+import userRouter from "./routes/users.js"
 import validateEnvVar from "./utils/validateEnvVar.js"
 import helmet from "helmet"
 import cors from "cors"
@@ -16,27 +16,30 @@ import imagesRouter from "./routes/images.js"
 
 const app = express()
 app.disable('x-powered-by')
-app.set('trust proxy', 1)
+app.set('trust proxy', 0)
 
 app.use(rateLimiter({
     windowMs: 15 * 60 * 1000,
-    max: 100,
+    max: 1000,
 }))
 
 app.use(fileUpload({
     limits: {
-        fileSize: 5 * 1024 * 1024, 
+        fileSize: 5 * 1024 * 1024,
     },
     abortOnLimit: true,
 }))
 app.use(express.json())
-app.use(helmet())
+app.use(helmet({
+    crossOriginResourcePolicy: false,
+  }))
 app.use(cors())
 app.use(xssClean)
 
 
 app.use('/api/v1/images', imagesRouter)
 app.use('/api/v1/auth', authRouter)
+app.use('/api/v1/users', userRouter)
 app.use('/api/v1/listings', listingsRouter)
 
 app.use(notFoundMiddleware)

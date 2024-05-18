@@ -3,18 +3,48 @@ import NotFoundError from "../errors/not-found.js"
 import { RequestHandler } from "express"
 import { StatusCodes } from "http-status-codes"
 import Listing from "../models/Listing.js"
+import { ListingQuery, ListingQueryParams } from "build/types/ListingQueryParams.js"
 
 const getAllListings: RequestHandler = async (req, res) => {
-    const allListings = await Listing.find()
-    let userListings = null
-    if(req.user?.userId) {
-        userListings = await Listing.find({ createdBy: req.user.userId })
+    const { limit, offset, city, startDate, endDate, minPrice, maxPrice } = req.query as ListingQueryParams
+    const limitNumber = parseInt(limit as string) || 10
+    const offsetNumber = parseInt(offset as string) || 0
+    const query: ListingQuery = {}
+
+    if (city) {
+        query['adress.city'] = city
     }
+
+    if (startDate || endDate) {
+        query.createdAt = {}
+        if (startDate) {
+            query.createdAt.$gte = new Date(startDate as string)
+        }
+        if (endDate) {
+            query.createdAt.$lte = new Date(endDate as string)
+        }
+    }
+
+    if (minPrice || maxPrice) {
+        query.price = {}
+        if (minPrice) {
+            query.price.$gte = parseFloat(minPrice as string)
+        }
+        if (maxPrice) {
+            query.price.$lte = parseFloat(maxPrice as string)
+        }
+    }
+
+    const allListings = await Listing.find(query)
+        .skip(offsetNumber)
+        .limit(limitNumber)
+
 
     res
         .status(StatusCodes.OK)
-        .json({ allListings, userListings })
+        .json({ allListings })
 }
+
 
 const getListing: RequestHandler = async (req, res) => {
     const { id: listingId } = req.params
@@ -29,11 +59,11 @@ const getListing: RequestHandler = async (req, res) => {
 }
 
 const createListing: RequestHandler = async (req, res) => {
-        req.body.createdBy = req.user.userId
-        const listing = await Listing.create({ ...req.body })
-        res
-            .status(StatusCodes.CREATED)
-            .json({ listing })
+    req.body.createdBy = req.user.userId
+    const listing = await Listing.create({ ...req.body })
+    res
+        .status(StatusCodes.CREATED)
+        .json({ listing })
 }
 
 const updateListing: RequestHandler = async (req, res) => {
