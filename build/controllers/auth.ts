@@ -10,7 +10,7 @@ const register: RequestHandler = async (req, res) => {
 
     res
         .status(StatusCodes.CREATED)
-        .json({ user: { username: user.name }, token: user.createJWT() })
+        .json({ user: { username: user.name, _id: user._id }, token: user.createJWT() })
 }
 
 const login: RequestHandler = async (req, res) => {
@@ -29,14 +29,14 @@ const login: RequestHandler = async (req, res) => {
 
     res
         .status(StatusCodes.OK)
-        .json({ user: { username: user.name }, token })
+        .json({ user: { username: user.name, _id: user._id  }, token })
 }
 
 const getUser: RequestHandler = async (req, res) => {
 
     res
         .status(StatusCodes.OK)
-        .json({ user: { username: req.user.name } })
+        .json({ user: { username: req.user.name, _id: req.user.userId } })
 }
 
 export { register, login, getUser }
