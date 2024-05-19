@@ -9,7 +9,8 @@ router.patch('/:id/read', readMessage)
 router.route('/')
     .post(sendMessage)
     .get(getAllMessages)
+router.route('/:id')
+    .get(getMessage)
     .delete(deleteMessage)
-router.get('/:id', getMessage)
 
 export default router
