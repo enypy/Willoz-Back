@@ -51,8 +51,8 @@ export const getAllMessages: RequestHandler = async (req, res) => {
     })
 
     res
-    .status(StatusCodes.OK)
-    .json({ messages })
+        .status(StatusCodes.OK)
+        .json({ messages })
 }
 
 export const getMessage: RequestHandler = async (req, res) => {
@@ -69,8 +69,8 @@ export const getMessage: RequestHandler = async (req, res) => {
     }
 
     res
-    .status(StatusCodes.OK)
-    .json({ message })
+        .status(StatusCodes.OK)
+        .json({ message })
 }
 
 export const deleteMessage: RequestHandler = async (req, res) => {
@@ -88,5 +88,7 @@ export const deleteMessage: RequestHandler = async (req, res) => {
 
     await message.deleteOne()
 
-    res.status(StatusCodes.OK).send()
+    res
+        .status(StatusCodes.OK)
+        .send()
 }

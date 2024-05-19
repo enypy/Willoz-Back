@@ -15,7 +15,7 @@ const MessageSchema = new mongoose.Schema<IMessage, MessageModel, IMessageMethod
     type: Boolean,
     default: false,
   },
-})
+}, { timestamps: true })
 
 MessageSchema.methods.markAsRead = async function () {
   this.isOpen = true

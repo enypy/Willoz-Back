@@ -44,7 +44,6 @@ const getAllListings: RequestHandler = async (req, res) => {
         .skip(offsetNumber)
         .limit(limitNumber)
 
-
     res
         .status(StatusCodes.OK)
         .json({ listings, total: totalListings })
