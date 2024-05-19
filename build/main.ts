@@ -13,6 +13,7 @@ import notFoundMiddleware from "./middleware/not-found.js"
 import errorHandlerMiddleware from "./middleware/error-handler.js"
 import fileUpload from "express-fileupload"
 import imagesRouter from "./routes/images.js"
+import messagesRouter from "./routes/messages.js"
 
 const app = express()
 app.disable('x-powered-by')
@@ -41,6 +42,7 @@ app.use('/api/v1/images', imagesRouter)
 app.use('/api/v1/auth', authRouter)
 app.use('/api/v1/users', userRouter)
 app.use('/api/v1/listings', listingsRouter)
+app.use('/api/v1/messages', messagesRouter)
 
 app.use(notFoundMiddleware)
 app.use(errorHandlerMiddleware)

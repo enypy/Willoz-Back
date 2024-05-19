@@ -38,6 +38,8 @@ const getAllListings: RequestHandler = async (req, res) => {
         }
     }
 
+    const totalListings = await Listing.countDocuments(query)
+
     const listings = await Listing.find(query)
         .skip(offsetNumber)
         .limit(limitNumber)
@@ -45,7 +47,7 @@ const getAllListings: RequestHandler = async (req, res) => {
 
     res
         .status(StatusCodes.OK)
-        .json({ listings })
+        .json({ listings, total: totalListings })
 }
 
 
