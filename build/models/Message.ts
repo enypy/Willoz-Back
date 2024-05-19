@@ -15,6 +15,10 @@ const MessageSchema = new mongoose.Schema<IMessage, MessageModel, IMessageMethod
     type: Boolean,
     default: false,
   },
+  content: {
+    type: String,
+    required: true,
+  },
 }, { timestamps: true })
 
 MessageSchema.methods.markAsRead = async function () {
