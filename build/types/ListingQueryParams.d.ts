@@ -6,6 +6,8 @@ export interface ListingQueryParams {
     endDate?: string;
     minPrice?: string;
     maxPrice?: string;
+    sortBy?: 'createdAt' | 'price';
+    sortOrder?: 'asc' | 'desc';
 }
 
 export interface ListingQuery {

@@ -3,52 +3,60 @@ import NotFoundError from "../errors/not-found.js"
 import { RequestHandler } from "express"
 import { StatusCodes } from "http-status-codes"
 import Listing from "../models/Listing.js"
-import { ListingQuery, ListingQueryParams } from "build/types/ListingQueryParams.js"
+import { ListingQuery, ListingQueryParams } from "../types/ListingQueryParams.js"
 import validateQueryParam from "../utils/validateQueryParam.js"
+import { SortOrder } from 'mongoose'
 
 const getAllListings: RequestHandler = async (req, res) => {
-    const { limit, offset, city, startDate, endDate, minPrice, maxPrice } = req.query as ListingQueryParams
-    const limitNumber = validateQueryParam(limit) ? parseInt(limit as string) : 10
-    const offsetNumber = validateQueryParam(offset) ? parseInt(offset as string) : 0
-    const query: ListingQuery = {}
+    const { limit, offset, city, startDate, endDate, minPrice, maxPrice, sortBy, sortOrder } = req.query as ListingQueryParams;
+    const limitNumber = validateQueryParam(limit) ? parseInt(limit as string) : 10;
+    const offsetNumber = validateQueryParam(offset) ? parseInt(offset as string) : 0;
+    const query: ListingQuery = {};
 
     if (validateQueryParam(city)) {
-        query['adress.city'] = city
+        query['adress.city'] = city;
     }
 
     if (startDate || endDate) {
         if (validateQueryParam(startDate)) {
-            query.createdAt = {}
-            query.createdAt.$gte = new Date(startDate as string)
+            query.createdAt = query.createdAt || {};
+            query.createdAt.$gte = new Date(startDate as string);
         }
         if (validateQueryParam(endDate)) {
-            if (!query.createdAt) query.createdAt = {}
-            query.createdAt.$lte = new Date(endDate as string)
+            query.createdAt = query.createdAt || {};
+            query.createdAt.$lte = new Date(endDate as string);
         }
     }
 
     if (minPrice || maxPrice) {
         if (validateQueryParam(minPrice)) {
-            query.price = {}
-            query.price.$gte = parseFloat(minPrice as string)
+            query.price = query.price || {};
+            query.price.$gte = parseFloat(minPrice as string);
         }
         if (validateQueryParam(maxPrice)) {
-            if (!query.price) query.price = {}
-            query.price.$lte = parseFloat(maxPrice as string)
+            query.price = query.price || {};
+            query.price.$lte = parseFloat(maxPrice as string);
         }
     }
 
-    const totalListings = await Listing.countDocuments(query)
+    const sortQuery: { [key: string]: SortOrder } = {};
+    if (validateQueryParam(sortBy)) {
+        const sortField = sortBy as 'createdAt' | 'price';
+        const sortOrderValue: SortOrder = sortOrder === 'desc' ? -1 : 1;
+        sortQuery[sortField] = sortOrderValue;
+    }
+
+    const totalListings = await Listing.countDocuments(query);
 
     const listings = await Listing.find(query)
+        .sort(sortQuery)
         .skip(offsetNumber)
-        .limit(limitNumber)
+        .limit(limitNumber);
 
     res
         .status(StatusCodes.OK)
-        .json({ listings, total: totalListings })
+        .json({ listings, total: totalListings });
 }
-
 
 const getListing: RequestHandler = async (req, res) => {
     const { id: listingId } = req.params
