@@ -1,8 +1,8 @@
 import { RequestHandler } from "express"
 import { StatusCodes } from "http-status-codes"
 import Listing from "../models/Listing.js"
-import User from "build/models/User.js"
-import NotFoundError from "build/errors/not-found.js"
+import User from "../models/User.js"
+import NotFoundError from "../errors/not-found.js"
 
 const getUserListings: RequestHandler = async (req, res) => {
 

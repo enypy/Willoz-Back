@@ -4,7 +4,7 @@ import authenticateUser from "../middleware/authentication.js"
 
 const router = express.Router()
 
-router.get('/:id', getUserInfos)
+router.get('/infos/:id', getUserInfos)
 router.use(authenticateUser)
 router.get('/listings', getUserListings)
 
