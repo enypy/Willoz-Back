@@ -14,6 +14,7 @@ import errorHandlerMiddleware from "./middleware/error-handler.js"
 import fileUpload from "express-fileupload"
 import imagesRouter from "./routes/images.js"
 import messagesRouter from "./routes/messages.js"
+import paymentsRouter from "./routes/payments.js"
 
 const app = express()
 app.disable('x-powered-by')
@@ -30,10 +31,17 @@ app.use(fileUpload({
     },
     abortOnLimit: true,
 }))
-app.use(express.json())
+app.use(express.json({
+    verify: (req, res, buf) => {
+        if (req?.originalUrl.startsWith('/payments/webhook')) {
+            req.rawBody = buf.toString()
+        }
+    },
+}))
+
 app.use(helmet({
     crossOriginResourcePolicy: false,
-  }))
+}))
 app.use(cors())
 app.use(xssClean)
 
@@ -43,6 +51,7 @@ app.use('/api/v1/auth', authRouter)
 app.use('/api/v1/users', userRouter)
 app.use('/api/v1/listings', listingsRouter)
 app.use('/api/v1/messages', messagesRouter)
+app.use('/payments', paymentsRouter)
 
 app.use(notFoundMiddleware)
 app.use(errorHandlerMiddleware)
